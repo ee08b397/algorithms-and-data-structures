@@ -1,4 +1,4 @@
-algorithms---data-structures
+algorithms-and-data-structures
 ============================
 
-for future reference
+important algorithms & data structures, for future reference
