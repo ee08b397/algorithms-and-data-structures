@@ -1,0 +1,28 @@
+
+IMPORTANT :
+
+To compile this source code on any reasonable UNIX or UNIX-like
+platform (including Macintosh OS X, and even some Androids...),
+simply run
+
+	'make clean && make test'
+
+with current working directory being the directory containing the
+'Makefile' file (this is assuming 'g++' is available for compiling
+the source code).
+
+That's all. The name of the executable should be 'test'
+
+After that one can just run './test' to see the output
+
+One can also modify the CFLAG in the 'Makefile' to enable debugging
+output
+
+--------------------------------------------------------------------
+
+To compile this source code on MS Windows, import all .cc files and
+.h files into some IDE, and then click a button that says 'compile'
+(you may need to rename all .cc files to .cpp files, IDK...)
+Also your mileage may vary.
+
+(BTW I'm NOT a Windows user)
