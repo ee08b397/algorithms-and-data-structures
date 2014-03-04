@@ -96,13 +96,7 @@ public class ExpiringMap<K, V> {
 			hMap.put(key, value);
 			expMap.put(key, e);
 			Q.add(e);
-			evict = true;
-			Q.notify();
-			while (evict) {
-				try {
-					Q.wait();
-				} catch (InterruptedException ex) { }
-			}
+			Evict();
 		}
 	}
 
@@ -113,14 +107,18 @@ public class ExpiringMap<K, V> {
 			Q.remove(e); 
 			expMap.put(key, n);
 			Q.add(n);
-			evict = true;
-			Q.notify();
-			while (evict) {
-				try {
-					Q.wait();
-				} catch (InterruptedException ex) { }
-			}
+			Evict();
 			return true;
+		}
+	}
+
+	private void Evict() {
+		evict = true;
+		Q.notify();
+		while (evict) {
+			try {
+				Q.wait();
+			} catch (InterruptedException ex) { }
 		}
 	}
 
