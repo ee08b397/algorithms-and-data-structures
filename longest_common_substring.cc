@@ -34,7 +34,7 @@ class suffix_tree {
 
 	public :
 
-		suffix_tree(size_t __length, const unsigned char *const __str) : next_node_idx(1), length(__length), str(__str), nd(new struct node[(length << 1) + 1]) {  /* # of nodes is at most ( 2 * length + 1 ) */
+		suffix_tree(const size_t __length, const unsigned char *const __str) : next_node_idx(1), length(__length), str(__str), nd(new struct node[(length << 1) + 1]) {  /* # of nodes is at most ( 2 * length + 1 ) */
 			unsigned char c;
 			int prev_state = NONE;
 			size_t p, q, idx, current_depth, current_pos;
