@@ -64,8 +64,8 @@ template <typename T, T MIN_ELEM> class sTree {
 		}
 
 		void init_tree(const T data[], const size_t node_num, const size_t min_idx, const size_t max_idx) {
-			if(min_idx > max_idx) return; /* range is empty */
-			if(min_idx == max_idx) {  /* reaching leaf node of the tree */
+			if (min_idx > max_idx) return; /* range is empty */
+			if (min_idx == max_idx) {  /* reaching leaf node of the tree */
 				tree[node_num - 1] = data[min_idx];    /* initialize leaf value */
 				return;
 			}
@@ -76,25 +76,25 @@ template <typename T, T MIN_ELEM> class sTree {
 
 		void update(const size_t node_num, const size_t min_idx, const size_t max_idx, const size_t start, const size_t end, const T diff) {
 			push_down(node_num, min_idx, max_idx);
-			if(min_idx > max_idx || max_idx < start || min_idx > end) return;  /* range is empty or disjoint from [start, end] */
-			if(min_idx >= start && max_idx <= end) {  /* range is entirely contained in [start, end] */
+			if (min_idx > max_idx || max_idx < start || min_idx > end) return;  /* range is empty or disjoint from [start, end] */
+			if (min_idx >= start && max_idx <= end) {  /* range is entirely contained in [start, end] */
 				tree[node_num - 1] += diff;
-				if(min_idx != max_idx) {   /* current node is not a leaf node */
+				if (min_idx != max_idx) {   /* current node is not a leaf node */
 					delta[(node_num << 1) - 1] += diff;
 					delta[node_num << 1] += diff;
 				}
 				return;
 			}
 			update(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end, diff);  /* update left sub-tree */
-			update(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end, diff); // Updating right child
-			tree[node_num - 1] = std::max(tree[(node_num << 1) - 1], tree[node_num << 1]); // update root with max value
+			update(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end, diff); /* Updating right child */
+			tree[node_num - 1] = std::max(tree[(node_num << 1) - 1], tree[node_num << 1]); /* update root with max value */
 		}
 
 		T query(const size_t node_num, const size_t min_idx, const size_t max_idx, const size_t start, const size_t end) {
 			
-			if(min_idx > max_idx || max_idx < start || min_idx > end) return MIN_ELEM;   /* range is empty or disjoint from [start, end] */
+			if (min_idx > max_idx || max_idx < start || min_idx > end) return MIN_ELEM;   /* range is empty or disjoint from [start, end] */
 			push_down(node_num, min_idx, max_idx);
-			if(min_idx >= start && max_idx <= end) return tree[node_num - 1];  /* range is entirely contained in [start, end] */
+			if (min_idx >= start && max_idx <= end) return tree[node_num - 1];  /* range is entirely contained in [start, end] */
 			return std::max(query(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end), query(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end));  /* return max of max value from left sub-tree and max value from right sub-tree as final result */
 		}
 
