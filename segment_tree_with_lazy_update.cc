@@ -71,7 +71,7 @@ template <typename T, T MIN_ELEM> class sTree {
 			}
 			init_tree(data, node_num << 1, min_idx, (min_idx + max_idx) >> 1);   /* initialize left sub-tree */
 			init_tree(data, (node_num << 1) + 1, 1 + ((min_idx + max_idx) >> 1), max_idx);   /* initialize right sub-tree*/
-			tree[node_num - 1] = std::max(tree[(node_num << 1) - 1], tree[(node_num << 1)]);   /* up-propagate max value */
+			tree[node_num - 1] = push_up(node_num);   /* up-propagate max value */
 		}
 
 		void update(const size_t node_num, const size_t min_idx, const size_t max_idx, const size_t start, const size_t end, const T diff) {
@@ -87,7 +87,7 @@ template <typename T, T MIN_ELEM> class sTree {
 			}
 			update(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end, diff);  /* update left sub-tree */
 			update(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end, diff); /* Updating right child */
-			tree[node_num - 1] = std::max(tree[(node_num << 1) - 1], tree[node_num << 1]); /* update root with max value */
+			tree[node_num - 1] = push_up(node_num); /* update root with max value */
 		}
 
 		T query(const size_t node_num, const size_t min_idx, const size_t max_idx, const size_t start, const size_t end) {
@@ -95,7 +95,7 @@ template <typename T, T MIN_ELEM> class sTree {
 			if (min_idx > max_idx || max_idx < start || min_idx > end) return MIN_ELEM;   /* range is empty or disjoint from [start, end] */
 			push_down(node_num, min_idx, max_idx);
 			if (min_idx >= start && max_idx <= end) return tree[node_num - 1];  /* range is entirely contained in [start, end] */
-			return std::max(query(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end), query(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end));  /* return max of max value from left sub-tree and max value from right sub-tree as final result */
+			return aggregate(query(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end), query(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end));  /* return max of max value from left sub-tree and max value from right sub-tree as final result */
 		}
 
 		void push_down(const size_t node_num, const size_t min_idx, const size_t max_idx) {
@@ -109,6 +109,13 @@ template <typename T, T MIN_ELEM> class sTree {
 			}
 		}
 
+		T aggregate(const T &a, const T &b) {
+			return std::max(a, b);
+		}
+
+		T push_up(const size_t node_num) {
+			return aggregate(tree[(node_num << 1) - 1], tree[node_num << 1]); 
+		}
 };
 
 bool comp(const std::pair<size_t, int>& t1, const std::pair<size_t, int>& t2) {
