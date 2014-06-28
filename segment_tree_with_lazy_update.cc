@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <climits>
 
-template <typename T, T MIN_ELEM> class sTree {
+template <typename T, T OUT_OF_RANGE_ELEM> class sTree {
 
 	public :
 
@@ -92,7 +92,7 @@ template <typename T, T MIN_ELEM> class sTree {
 
 		T query(const size_t node_num, const size_t min_idx, const size_t max_idx, const size_t start, const size_t end) {
 			
-			if (min_idx > max_idx || max_idx < start || min_idx > end) return MIN_ELEM;   /* range is empty or disjoint from [start, end] */
+			if (min_idx > max_idx || max_idx < start || min_idx > end) return OUT_OF_RANGE_ELEM;   /* range is empty or disjoint from [start, end] */
 			push_down(node_num, min_idx, max_idx);
 			if (min_idx >= start && max_idx <= end) return tree[node_num - 1];  /* range is entirely contained in [start, end] */
 			return aggregate(query(node_num << 1, min_idx, (min_idx + max_idx) >> 1, start, end), query(1 + (node_num << 1), 1 + ((min_idx + max_idx) >> 1), max_idx, start, end));  /* return max of max value from left sub-tree and max value from right sub-tree as final result */
