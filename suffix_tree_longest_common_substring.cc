@@ -11,7 +11,7 @@ struct node {   /* d : depth (from starting point of the suffix) */
 	struct node *parent, *suffix_link, *next[N_SYMB];
 };
 
-void init_node(struct node *const n, const size_t s, const size_t e, const size_t d, node *const parent) {
+void init_node(struct node *const n, const size_t s, const size_t e, const size_t d, struct node *const parent) {
 	unsigned char i;
 	n -> s = s;
 	n -> e = e;
