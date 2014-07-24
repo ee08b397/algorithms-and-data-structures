@@ -6,7 +6,7 @@
 #define MAX_LEN 100005
 
 unsigned char str[MAX_LEN + 1];
-size_t cnt[MAX_LEN + 3], s[MAX_LEN + 3], suffix_array[MAX_LEN + 3];
+size_t cnt[MAX_LEN + 3], s[MAX_LEN + 3], sa[MAX_LEN + 3], r[MAX_LEN], h[MAX_LEN];
 
 inline int leq2(const size_t a1, const size_t a2, const size_t b1, const size_t b2) { /* (a1, a2) <= (b1, b2) */
 	return (a1 < b1 || (a1 == b1 && a2 <= b2)); 
@@ -64,15 +64,30 @@ void compute_suffix_array(const size_t *const s, size_t *const suffix_array, con
 	free(s12), free(suffix_array12), free(suffix_array0), free(s0);
 }
 
+void compute_lcp_array(const size_t length, const size_t *const suffix_array, size_t *const rank, size_t *const lcp_array) {
+	size_t i, j, h;
+	for (i = 0; i < length; ++i) rank[suffix_array[i]] = i;
+	for (h = 0, i = 1; i < length; ++i) {
+		if (rank[i]) {
+			for (j = suffix_array[rank[i] - 1]; str[i + h] && str[j + h] && str[i + h] == str[j + h]; ++h);
+			lcp_array[rank[i]] = h;
+			if (h) --h;
+		}
+	}
+}
+
 int main(int argc, char *argv[]) {
 	unsigned int max_val;
-	size_t n, length;
+	size_t n, len;
 	while (EOF != scanf("%s", str)) {
 		for (max_val = 0, n = 0; str[n]; ++n) { s[n] = str[n]; if (str[n] > max_val) max_val = str[n]; }
-		length = n;
-		for (n = length; n < length + 3; ++n) suffix_array[n] = s[n] = 0;
-		compute_suffix_array(s, suffix_array, length, max_val);
-		for (n = 0; n < length; ++n) printf("%lu ", suffix_array[n]);
+		len = n + 1;
+		for (n = len; n < len + 3; ++n) sa[n] = s[n] = 0;
+		compute_suffix_array(s, sa, len, max_val);
+		for (n = 0; n < len; ++n) printf("%lu ", sa[n]);
+		printf("\n");
+		compute_lcp_array(len, sa, r, h);
+		for (n = 0; n < len; ++n) printf("%lu ", h[n]); 
 		printf("\n");
 	}
 	return 0;
