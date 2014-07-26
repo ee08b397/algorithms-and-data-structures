@@ -24,15 +24,15 @@ unsigned int find_successor(const unsigned int elem) {
 }
 
 int main(int argc, char *argv[]) {
-	unsigned int P, Q, p_idx, q_idx, n, max_min, alt, m, alt_M, M;
+	unsigned int P, Q, p_idx, q_idx, n, max_min_L1_dist, alt, m, alt_M, M;
 	scanf("%u", &N);
 	for (n = 0; n < N; ++n) scanf("%u", &A[n]);
 	qsort(A, N, sizeof(unsigned int), cmp);
 	scanf("%u%u", &P, &Q);
-	max_min = 0, M = A[0], p_idx = find_successor(P), q_idx = find_predecessor(Q);
-	if (P < A[0]) max_min = A[0] - P, M = P; else if (p_idx && (alt = ((m = (A[p_idx - 1] + A[p_idx]) >> 1) < P ? A[p_idx] - (alt_M = P) : A[p_idx] - (alt_M = m))) > max_min) max_min = alt, M = alt_M; 
-	if (Q > A[N - 1] && (alt = Q - A[N - 1]) > max_min) max_min = alt, M = Q; else if (q_idx + 1 < N && (alt = ((m = (A[q_idx] + A[q_idx + 1]) >> 1) > Q ? (alt_M = Q) - A[q_idx] : (alt_M = m) - A[q_idx])) > max_min) max_min = alt, M = alt_M;
-	for (n = p_idx; n < q_idx; ++n) if ((alt = ((alt_M = (A[n] + A[n + 1]) >> 1) - A[n])) > max_min) max_min = alt, M = alt_M; 
+	max_min_L1_dist = 0, M = A[0], p_idx = find_successor(P), q_idx = find_predecessor(Q);
+	if (P < A[0]) max_min_L1_dist = A[0] - P, M = P; else if (p_idx && (alt = ((m = (A[p_idx - 1] + A[p_idx]) >> 1) < P ? A[p_idx] - (alt_M = P) : A[p_idx] - (alt_M = m))) > max_min_L1_dist) max_min_L1_dist = alt, M = alt_M; 
+	if (Q > A[N - 1] && (alt = Q - A[N - 1]) > max_min_L1_dist) max_min_L1_dist = alt, M = Q; else if (q_idx + 1 < N && (alt = ((m = (A[q_idx] + A[q_idx + 1]) >> 1) > Q ? (alt_M = Q) - A[q_idx] : (alt_M = m) - A[q_idx])) > max_min_L1_dist) max_min_L1_dist = alt, M = alt_M;
+	for (n = p_idx; n < q_idx; ++n) if ((alt = ((alt_M = (A[n] + A[n + 1]) >> 1) - A[n])) > max_min_L1_dist) max_min_L1_dist = alt, M = alt_M; 
 	printf("%u\n", M);
 	return 0;
 }
