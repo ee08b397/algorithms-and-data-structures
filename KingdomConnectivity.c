@@ -1,3 +1,12 @@
+/*
+ *    https://www.hackerrank.com/challenges/kingdom-connectivity
+ *
+ *    Score: 64
+ *    Status: Accepted
+ *
+ *    Author: Yitao Li
+ *
+ */
 #include <stdio.h>
 
 #define MAX_V 10000
@@ -9,6 +18,11 @@ struct end_pt {
 	struct end_pt *next;
 };
 
+/*
+ * conn[i]: number of path(s) to reach the i-th SCC from the financial capital
+ * has_loop[i]: 1 if any path from the financial capital to the i-th SCC has a loop, otherwise 0
+ *
+ */
 unsigned int V, E, top, next_idx, num_scc, q[MAX_E], deg[MAX_V], conn[MAX_V], has_loop[MAX_V], idx[MAX_V], lowlink[MAX_V], stack[MAX_V], in_stack[MAX_V], scc_size[MAX_V], scc_map[MAX_V];
 struct end_pt edge[MAX_E], scc_edge[MAX_E], *ptr, *adj[MAX_V], *scc_adj[MAX_V];
 
@@ -23,7 +37,7 @@ void scc(const unsigned int v) {
 			if (lowlink[w] < lowlink[v]) lowlink[v] = lowlink[w];
 		}else if (in_stack[w] && idx[w] < lowlink[v]) lowlink[v] = idx[w];
 	}
-	/* this maps each vertex in the current strongly-connected component to the root vertex of the component and also adds that root vertex to an array */
+	/* this maps each vertex in the current strongly-connected component to the index of that component and also records the size of each component */
 	if (lowlink[v] == idx[v]) {
 		/* printf("BEGIN SCC:\n"); */
 		for (scc_size[num_scc] = 0, w = -1; w != v; ) scc_map[w = stack[--top]] = num_scc, in_stack[w] = 0, ++scc_size[num_scc]/*, printf("%u ", w + 1)*/; 
