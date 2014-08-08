@@ -16,13 +16,10 @@ int query(const size_t idx) {
 	return val;
 }
 
-void __update(const size_t idx, const int d) {
-	size_t n;
-	for (n = idx + 1; n <= NUM_ELEM; n += n & -n) delta[n - 1] += d;
-}
-
 void update(const size_t range_min, const size_t range_max, const int d) {
-	__update(range_min, d), __update(range_max + 1, -d);
+	size_t n;
+	for (n = range_min + 1; n <= NUM_ELEM; n += n & -n) delta[n - 1] += d;
+	for (n = range_max + 2; n <= NUM_ELEM; n += n & -n) delta[n - 1] -= d;
 }
 
 int main(int argc, char *argv[]) {

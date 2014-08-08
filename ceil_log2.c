@@ -1,29 +1,28 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <assert.h>
 
-unsigned int ceil_log2(const unsigned long long __x) {
-	static const unsigned long long t[6] = {
+unsigned int ceil_log2(const uint64_t X) {
+	static const uint64_t t[7] = {
 		0xFFFFFFFF00000000ull,
 		0x00000000FFFF0000ull,
 		0x000000000000FF00ull,
 		0x00000000000000F0ull,
 		0x000000000000000Cull,
-		0x0000000000000002ull
+		0x0000000000000002ull,
+		0x0000000000000001ull
 	};
-
-	unsigned long long x = __x;
-	unsigned int y = (((x & (x - 1)) == 0) ? 0 : 1), i, j, k;
-
-	for (j = 0x20, i = 0; i < 6; ++i) {
-		k = (((x & t[i]) == 0) ? 0 : j);
-		y += k;
-		x >>= k;
-		j >>= 1;
+	unsigned int l, i, p;
+	uint64_t x;
+	for (x = X, p = 32, l = 0, i = 0; i < 7; ++i) {
+		if (x & t[i]) l += p, x >>= p;
+		p >>= 1;
 	}
-
-	return y;
+	return l + ((X & (X - 1)) ? 1 : 0);
 }
 
 int main(int argc, char *argv[]) {
+	uint64_t x, p;
 	printf("%u\n", ceil_log2(0));
 	printf("%u\n", ceil_log2(1));
 	printf("%u\n", ceil_log2(2));
@@ -48,5 +47,6 @@ int main(int argc, char *argv[]) {
 	printf("%u\n", ceil_log2(0xFFFFFFFF4FFFFFFFull));
 	printf("%u\n", ceil_log2(0xFFFFFFFF9FFFFFFFull));
 	printf("%u\n", ceil_log2(0xFFFFFFFFFFFFFFFFull));
+	for (x = 7; x < 77777777; ++x) p = (1ull << ceil_log2(x)), assert(((x == (x & -x)) && p == x) || (p > x && (p >> 1) < x));
 	return 0;
 }
