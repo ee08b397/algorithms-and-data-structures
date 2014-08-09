@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 		while (true) {
 			unsigned int s = N - 1, t = N - 1, temp;
 			for (unsigned int i = 0; i < N; ++i) {
-				std::cout << p[i] << ",";
+				std::cout << p[i] << " ";
 			}
 			std::cout << "\n";
 			while (s > 0) {
