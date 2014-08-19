@@ -22,6 +22,10 @@ int main(int argc, char *argv[]) {
 			ptr = ptr -> c[b];
 		}
 	}
+	/*
+	   this should imply a O(1) solution for the special case of choosing x, y from all integers within [A, B]
+	   (instead of choosing x, y out of some arbitrary set of integers)
+	 */
 	for (max = 0, n = A; n <= B; ++n) {
 		for (x = 0, ptr = &t[0], k = 32; k; --k) if (ptr -> c[!(b = (n >> (k - 1)) & 1)]) x |= 1 << (k - 1), ptr = ptr -> c[!b]; else ptr = ptr -> c[b]; 
 		if (x > max) max = x;
