@@ -23,23 +23,6 @@ void ins_edge(const unsigned int u, const unsigned int v, const unsigned int idx
 	e[num_edge].v = v, e[num_edge].next = adj[u], e[num_edge].idx = idx, adj[u] = &e[num_edge++];
 }
 
-/*
-void tarjan_dfs(const unsigned int r) {
-	unsigned int u, v, current_idx, stack_size;
-	struct end_pt *ptr;
-	for (current_idx = 0, stack_size = 1, stack[0] = r, inc[r] = -1; stack_size; ) {
-		if ((u = stack[--stack_size]) < MAX_V) {
-			vis[u] = 1, idx[u] = low[u] = current_idx++;
-			for (ptr = adj[u]; ptr; ptr = ptr->next) if (!vis[v = ptr->v]) stack[stack_size++] = v + MAX_V, p[v] = u, inc[v] = ptr->idx, stack[stack_size++] = v; else if (inc[u] != ptr->idx && idx[v] < low[u]) low[u] = idx[v];
-		}else {
-			v = u - MAX_V, u = p[v];
-			if (low[v] < low[u]) low[u] = low[v];
-			if (low[v] > idx[u]) br[K++] = inc[v];
-		}
-	}
-}
-*/
-
 void tarjan_dfs(const unsigned int r) {
 	unsigned int u, v, p_idx, current_idx, stack_size;
 	struct end_pt *ptr;
