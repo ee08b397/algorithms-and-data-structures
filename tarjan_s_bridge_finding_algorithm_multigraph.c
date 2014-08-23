@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_V 200100
-#define MAX_E 200100
+#define MAX_V 10000
+#define MAX_E 100000
 
 unsigned int V, E, num_edge, K, vis[MAX_V], idx[MAX_V], low[MAX_V], pr[MAX_V], inc[MAX_V], br[MAX_E];
 
@@ -13,7 +13,7 @@ struct end_pt {
 
 struct spt {
 	unsigned int u, v, idx;
-} stack[MAX_V + MAX_E];
+} stack[MAX_V + (MAX_E << 1)];
 
 int cmp(const void *const a, const void *const b) {
 	return *((const unsigned int *const)a) < *((const unsigned int *const)b) ? -1 : 1;

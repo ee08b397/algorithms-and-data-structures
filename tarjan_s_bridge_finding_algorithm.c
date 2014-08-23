@@ -3,7 +3,7 @@
 #define MAX_V 1000
 #define MAX_E 1000
 
-unsigned int V, E, num_edge, vis[MAX_V], idx[MAX_V], low[MAX_V], /*p[MAX_V], */bcc_out_deg[MAX_V], stack[MAX_V + MAX_E][2];
+unsigned int V, E, num_edge, vis[MAX_V], idx[MAX_V], low[MAX_V], /*p[MAX_V], */bcc_out_deg[MAX_V], stack[MAX_V + (MAX_E << 1)][2];
 
 unsigned int current_idx;
 
