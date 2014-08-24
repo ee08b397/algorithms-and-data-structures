@@ -4,7 +4,7 @@
 #define MAX_V 10000
 #define MAX_E 100000
 
-unsigned int V, E, num_edge, K, vis[MAX_V], idx[MAX_V], low[MAX_V], pr[MAX_V], inc[MAX_V], br[MAX_E];
+unsigned int V, E, num_edge, K, vis[MAX_V], idx[MAX_V], low[MAX_V], /* pr[MAX_V], */inc[MAX_V], br[MAX_E];
 
 struct end_pt {
 	unsigned int v, idx;
@@ -26,7 +26,7 @@ void ins_edge(const unsigned int u, const unsigned int v, const unsigned int idx
 void tarjan_dfs(const unsigned int r) {
 	unsigned int u, v, p_idx, current_idx, stack_size;
 	struct end_pt *ptr;
-	for (current_idx = 0, stack_size = 1, stack[0].u = -1, stack[0].v = r, stack[0].idx = -1, pr[r] = -1, inc[r] = -1; stack_size; ) {
+	for (current_idx = 0, stack_size = 1, stack[0].u = -1, stack[0].v = r, stack[0].idx = -1, /* pr[r] = -1, */inc[r] = -1; stack_size; ) {
 		u = stack[stack_size - 1].u, v = stack[stack_size - 1].v, p_idx = stack[stack_size - 1].idx;
 		if (v < MAX_V) {
 			if (!vis[v]) {
@@ -41,7 +41,7 @@ void tarjan_dfs(const unsigned int r) {
 			}
 		}else {
 			v -= MAX_V;
-			if (!vis[v]) stack[stack_size - 1].v = v, pr[v] = u, inc[v] = p_idx; else if (--stack_size, idx[v] < low[u]) low[u] = idx[v];
+			if (!vis[v]) stack[stack_size - 1].v = v, /* pr[v] = u, */inc[v] = p_idx; else if (--stack_size, idx[v] < low[u]) low[u] = idx[v];
 		}
 	}
 }
