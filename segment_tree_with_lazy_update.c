@@ -37,14 +37,14 @@ void update(const unsigned int node_num, const unsigned int min, const unsigned 
 		if (min < max) delta[node_num << 1] += diff, delta[(node_num << 1) | 1] += diff;
 		return;
 	}
-	mid = (min + max) >> 1, update(node_num << 1, min, mid, start, end, diff), update((node_num << 1) | 1, mid + 1, max, start, end, diff), t[node_num] = MAX(t[node_num << 1], t[(node_num << 1) | 1]);
+	mid = min + ((max - min) >> 1), update(node_num << 1, min, mid, start, end, diff), update((node_num << 1) | 1, mid + 1, max, start, end, diff), t[node_num] = MAX(t[node_num << 1], t[(node_num << 1) | 1]);
 }
 
 int query(const unsigned int node_num, const unsigned int min, const unsigned int max, const unsigned int start, const unsigned int end) {
 	unsigned int mid;
 	if (!push_down(node_num, min, max) || end < min || max < start) return INT_MIN;
 	if (start <= min && max <= end) return t[node_num]; 
-	return mid = (min + max) >> 1, MAX(query(node_num << 1, min, mid, start, end), query((node_num << 1) | 1, mid + 1, max, start, end)); 
+	return mid = min + ((max - min) >> 1), MAX(query(node_num << 1, min, mid, start, end), query((node_num << 1) | 1, mid + 1, max, start, end)); 
 }
 
 void update_arr(const unsigned int start, const unsigned int end, const int diff) {
