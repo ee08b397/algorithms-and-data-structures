@@ -10,7 +10,8 @@
 
 unsigned int msb(unsigned int x) {
 	static const unsigned int bval[] = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
-	unsigned int r = 0;
+	unsigned int r;
+	r = 0;
 	if (x & 0xFFFF0000) { r += 16; x >>= 16; }
 	if (x & 0x0000FF00) { r += 8; x >>= 8; }
 	if (x & 0x000000F0) { r += 4; x >>= 4; }
