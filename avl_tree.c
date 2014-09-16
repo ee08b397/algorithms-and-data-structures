@@ -55,7 +55,15 @@ struct elem * zag(struct elem *const e) {
 
 struct elem * min(struct elem *const e) {
 	struct elem *m;
+	if (!e) return NULL;
 	for (m = e; m->left; m = m->left);
+	return m;
+}
+
+struct elem * max(struct elem *const e) {
+	struct elem *m;
+	if (!e) return NULL;
+	for (m = e; m->right; m = m->right);
 	return m;
 }
 
@@ -68,8 +76,14 @@ struct elem * ins(struct elem *const e, const KEY_T key) {
 	return b > 1 && key < e->left->key ? zig(e) : b > 1 && key > e->left->key ? (e->left = zag(e->left), zig(e)) : b < -1 && key > e->right->key ? zag(e) : b < -1 && key < e->right->key ? (e->right = zig(e->right), zag(e)) : e;
 }
 
-struct elem * del(struct elem *const e, const KEY_T key) {
+struct elem * post_del(struct elem *const e) {
 	int b;
+	if (!e) return NULL;
+	update(e), b = balance_factor(e);
+	return b > 1 ? (balance_factor(e->left) >= 0 ? zig(e) : (e->left = zag(e->left), zig(e))) : b < -1 ? (balance_factor(e->right) <= 0 ? zag(e) : (e->right = zig(e->right), zag(e))) : e; 
+}
+
+struct elem * del(struct elem *const e, const KEY_T key) {
 	struct elem *tmp, *_e;
 	if (!e) return NULL;
 	_e = e;
@@ -77,9 +91,29 @@ struct elem * del(struct elem *const e, const KEY_T key) {
 		if (!(tmp = (e->left ? e->left : e->right))) tmp = e, _e = NULL; else *_e = *tmp;
 		/* free(tmp); */
 	}
-	if (!_e) return NULL;
-	update(_e), b = balance_factor(_e);
-	return b > 1 ? (balance_factor(_e->left) >= 0 ? zig(_e) : (_e->left = zag(_e->left), zig(_e))) : b < -1 ? (balance_factor(_e->right) <= 0 ? zag(_e) : (_e->right = zig(_e->right), zag(_e))) : _e; 
+	return post_del(_e);
+}
+
+struct elem * del_min(struct elem *const e) {
+	struct elem *tmp, *_e;
+	if (!e) return NULL;
+	_e = e;
+	if (e->left) e->left = del_min(e->left); else {
+		if (!(tmp = e->right)) tmp = e, _e = NULL; else *_e = *tmp;
+		/* free(tmp); */
+	}
+	return post_del(_e);
+}
+
+struct elem * del_max(struct elem *const e) {
+	struct elem *tmp, *_e;
+	if (!e) return NULL;
+	_e = e;
+	if (e->right) e->right = del_max(e->right); else {
+		if (!(tmp = e->left)) tmp = e, _e = NULL; else *_e = *tmp;
+		/* free(tmp); */
+	}
+	return post_del(_e);
 }
 
 struct elem * kth(struct elem *const e, const unsigned int k) {
