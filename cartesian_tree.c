@@ -1,52 +1,91 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <assert.h>
 
-#define MAX_N 50000
-#define LOG_MAX_N 16
+#define MAX_N 1048576
+#define NUM_DEL_TEST 100
+#define KEY_MIN 1024
+#define KEY_MAX 1048576
+#define KEY_T int
+#define PR_T int
 
-struct node {
-	int key, priority;
-	unsigned int idx;
-};
+static unsigned int num_node, key[MAX_N];
 
-/* min_priority_idx : RMQ table formed by priority values */
-/* note: parent, left_child, right_child are 1-based */
-unsigned int N, parent[MAX_N], left_child[MAX_N], right_child[MAX_N], min_priority_idx[LOG_MAX_N][MAX_N];
-struct node nd[MAX_N];
+static struct node {
+	KEY_T key;
+	PR_T priority;
+	struct node *left, *right, *parent;
+} n[MAX_N], *root;
 
-int cmp_key(const void * const a, const void * const b) {  /* sort nodes by key, in ascending order */
-	return ((const struct node *const)a) -> key < ((const struct node *const)b) -> key ? -1 : 1;
+struct node * new_node(const KEY_T key, const PR_T priority) {
+	n[num_node].key = key, n[num_node].priority = priority, n[num_node].left = NULL, n[num_node].right = NULL;
+	return &n[num_node++];
 }
 
-unsigned int msb(unsigned int x) {
-	static const unsigned int bval[] = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
-	unsigned int r = 0;
-	if (x & 0xFFFF0000) { r += 16; x >>= 16; }
-	if (x & 0x0000FF00) { r += 8; x >>= 8; }
-	if (x & 0x000000F0) { r += 4; x >>= 4; }
-	return r + bval[x];
+void zig(struct node *const u) {
+	struct node *l;
+	l = u->left, l->parent = u->parent;
+	if (u->parent) *(u == u->parent->left ? &(u->parent->left) : &(u->parent->right)) = l;
+	if ((u->left = l->right)) u->left->parent = u;
+	u->parent = l, l->right = u;
+	if (u == root) root = l;
 }
 
-/* note: parent_idx is 1-based */
-unsigned int build_tree(const unsigned int parent_idx, const unsigned int min_idx, const unsigned int max_idx) {
-	unsigned int root, root_idx, p, idx_a, idx_b;
-	p = msb(max_idx - min_idx + 1);
-	root = nd[idx_a = min_priority_idx[p - 1][min_idx]].priority < nd[idx_b = min_priority_idx[p - 1][max_idx - (1 << (p - 1)) + 1]].priority ? idx_a : idx_b;
-	root_idx = nd[root].idx;
-	parent[root_idx] = parent_idx;
-	left_child[root_idx] = root > min_idx ? build_tree(root_idx + 1, min_idx, root - 1) + 1 : 0;
-	right_child[root_idx] = root < max_idx ? build_tree(root_idx + 1, root + 1, max_idx) + 1 : 0;
-	return root_idx;
+void zag(struct node *const u) {
+	struct node *r;
+	r = u->right, r->parent = u->parent;
+	if (u->parent) *(u == u->parent->left ? &(u->parent->left) : &(u->parent->right)) = r;
+	if ((u->right = r->left)) u->right->parent = u;
+	u->parent = r, r->left = u;
+	if (u == root) root = r;
+}
+
+void shift_up(struct node *const u) {
+	while (u->parent && u->parent->priority > u->priority) if (u == u->parent->left) zig(u->parent); else zag(u->parent);
+	if (!u->parent) root = u;
+}
+
+void shift_down(struct node *const u) {
+	while (u->left || u->right) {
+		if (!u->left) zag(u); else if (!u->right || u->left->priority < u->right->priority) zig(u); else zag(u);
+		if (u == root) root = u->parent;
+	}
+}
+
+void ins(struct node *const u) {
+	struct node *p, **q;
+	if (!root) { u->parent = NULL, root = u; return; }
+	for (p = root; *(q = (u->key < p->key ? &(p->left) : &(p->right))); p = *q); 
+	u->parent = p, shift_up(*q = u);
+}
+
+struct node * del(const KEY_T key) {
+	struct node *u;
+	for (u = root; u && key != u->key; u = (key < u->key ? u->left : u->right));
+	if (!u) return NULL;
+	shift_down(u), *(u == u->parent->left ? &(u->parent->left) : &(u->parent->right)) = NULL;
+	return u;
+}
+
+void verify_inorder(const struct node *const u) {
+	if (!u) return;
+	verify_inorder(u->left), verify_inorder(u->right);
+	if (u->left) assert(u->left->key <= u->key);
+	if (u->right) assert(u->key <= u->right->key);
+}
+
+void verify_preorder(const struct node *const u) {
+	if (!u) return;
+	verify_preorder(u->left), verify_preorder(u->right);
+	if (u->parent) assert(u->priority >= u->parent->priority);
 }
 
 int main(int argc, char *argv[]) {
-	unsigned int n, w, p, idx_a, idx_b;
-	scanf("%u", &N);   /* assuming N > 0 */
-	for (n = 0; n < N; ++n) scanf("%d%d", &nd[n].key, &nd[n].priority), nd[n].idx = n, min_priority_idx[0][n] = n;
-	qsort(nd, N, sizeof(struct node), cmp_key);
-	for (p = 1, w = 1; p < LOG_MAX_N; ++p, w <<= 1) for (n = 0; n < N; ++n) min_priority_idx[p][n] = n + w < N ? nd[idx_a = min_priority_idx[p - 1][n]].priority < nd[idx_b = min_priority_idx[p - 1][n + w]].priority ? idx_a : idx_b : min_priority_idx[p - 1][n];  /* build RMQ sparse table with priority values */
-	build_tree(0, 0, N - 1);
-	printf("YES\n");
-	for (n = 0; n < N; ++n) printf("%u %u %u\n", parent[n], left_child[n], right_child[n]);
+	unsigned int n;
+	struct node *u;
+	for (srand(time(NULL)), num_node = 0; num_node < MAX_N; ins(new_node(key[num_node] = KEY_MIN + rand() % (KEY_MAX + 1 - KEY_MIN), rand())));
+	verify_inorder(root), verify_preorder(root);
+	for (n = 0; n < NUM_DEL_TEST; ++n) assert(!del(rand() % KEY_MIN)), assert(!del(KEY_MAX  + rand() % (KEY_MAX + 1 - KEY_MIN))), assert((u = del(key[n])) && key[n] == u->key), verify_inorder(root), verify_preorder(root);
 	return 0;
 }
